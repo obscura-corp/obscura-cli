@@ -1,4 +1,3 @@
-use crate::agent::client::AgentClient;
 use crate::cmd::common::load_vault;
 use crate::util::errors::{ObscuraError, ObscuraResult};
 use crate::util::io::prompt_yes_no;
@@ -43,10 +42,6 @@ pub fn handle_remove(args: RemoveArgs) -> ObscuraResult<()> {
 
     aliases_data.remove_alias(&args.alias);
     encrypt_and_save_vault(&vault_info.path, &vault_file, &aliases_data, &dek)?;
-
-    if AgentClient::is_running() {
-        let _ = AgentClient::store_dek(&vault_info.path, &dek);
-    }
 
     println!("Removed alias '{}'", args.alias);
     Ok(())

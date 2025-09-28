@@ -1,9 +1,9 @@
 use anyhow::Result;
 use clap::{Parser, Subcommand};
 
-mod agent;
 mod cmd;
 mod crypto;
+mod session;
 mod util;
 mod vault;
 
@@ -54,10 +54,10 @@ enum Commands {
         overwrite: bool,
     },
 
-    #[command(about = "Stop the background agent")]
+    #[command(about = "Clear cached vault keys")]
     Lock(lock::LockArgs),
 
-    #[command(about = "Start the background agent")]
+    #[command(about = "Cache vault keys for a limited time")]
     Unlock(unlock::UnlockArgs),
 }
 

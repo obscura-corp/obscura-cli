@@ -1,11 +1,16 @@
 use crate::util::errors::{ObscuraError, ObscuraResult};
 use argon2::{Algorithm, Argon2, Params, Version};
 use rand::{rngs::OsRng, RngCore};
+use std::env;
 use zeroize::ZeroizeOnDrop;
 
-const DEFAULT_MEMORY_KIB: u32 = 262_144;
-const DEFAULT_TIME: u32 = 3;
+const DEFAULT_MEMORY_KIB: u32 = 65_536;
+const DEFAULT_TIME: u32 = 1;
 const DEFAULT_LANES: u32 = 1;
+const MIN_MEMORY_KIB: u32 = 65_536;
+const MAX_MEMORY_KIB: u32 = 524_288;
+const MIN_TIME: u32 = 1;
+const MAX_TIME: u32 = 6;
 
 #[derive(Clone, ZeroizeOnDrop)]
 pub struct KdfParams {
@@ -22,8 +27,8 @@ impl KdfParams {
 
         Self {
             salt,
-            memory_kib: DEFAULT_MEMORY_KIB,
-            time: DEFAULT_TIME,
+            memory_kib: configured_memory_kib(),
+            time: configured_time(),
             lanes: DEFAULT_LANES,
         }
     }
@@ -60,6 +65,14 @@ fn derive_key(passphrase: &str, params: &KdfParams) -> ObscuraResult<[u8; 32]> {
         params.lanes,
         Some(Params::DEFAULT_OUTPUT_LEN),
     )
+    .or_else(|_| {
+        Params::new(
+            MIN_MEMORY_KIB,
+            params.time,
+            params.lanes,
+            Some(Params::DEFAULT_OUTPUT_LEN),
+        )
+    })
     .map_err(|_| ObscuraError::EncryptionFailed)?;
 
     let argon2 = Argon2::new(Algorithm::Argon2id, Version::V0x13, argon2_params);
@@ -70,4 +83,20 @@ fn derive_key(passphrase: &str, params: &KdfParams) -> ObscuraResult<[u8; 32]> {
         .map_err(|_| ObscuraError::EncryptionFailed)?;
 
     Ok(key)
+}
+
+fn configured_memory_kib() -> u32 {
+    env_value("OBSCURA_KDF_MEM_KIB")
+        .map(|value| value.clamp(MIN_MEMORY_KIB, MAX_MEMORY_KIB))
+        .unwrap_or(DEFAULT_MEMORY_KIB)
+}
+
+fn configured_time() -> u32 {
+    env_value("OBSCURA_KDF_TIME")
+        .map(|value| value.clamp(MIN_TIME, MAX_TIME))
+        .unwrap_or(DEFAULT_TIME)
+}
+
+fn env_value(name: &str) -> Option<u32> {
+    env::var(name).ok()?.parse().ok()
 }

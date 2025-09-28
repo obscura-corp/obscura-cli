@@ -7,7 +7,6 @@ pub enum ObscuraError {
     DecryptionFailed,
     EncryptionFailed,
     FilePermissionError,
-    AgentNotRunning,
     InvalidVaultFormat,
     PassphraseTooShort,
     ConfirmationMismatch,
@@ -23,7 +22,6 @@ impl fmt::Display for ObscuraError {
             ObscuraError::DecryptionFailed => write!(f, "Decryption failed"),
             ObscuraError::EncryptionFailed => write!(f, "Encryption failed"),
             ObscuraError::FilePermissionError => write!(f, "File permission error"),
-            ObscuraError::AgentNotRunning => write!(f, "Agent not running"),
             ObscuraError::InvalidVaultFormat => write!(f, "Invalid vault format"),
             ObscuraError::PassphraseTooShort => {
                 write!(f, "Passphrase must be at least 8 characters")

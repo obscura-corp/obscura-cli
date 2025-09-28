@@ -43,11 +43,6 @@ pub fn get_project_meta_path(project_path: &Path) -> ObscuraResult<PathBuf> {
         .join("meta.json"))
 }
 
-pub fn get_agent_socket_path() -> ObscuraResult<PathBuf> {
-    let config_dir = get_config_dir()?;
-    Ok(config_dir.join("agent.sock"))
-}
-
 pub fn ensure_config_dir() -> ObscuraResult<()> {
     let config_dir = get_config_dir()?;
     std::fs::create_dir_all(&config_dir).map_err(|_| ObscuraError::FilePermissionError)?;

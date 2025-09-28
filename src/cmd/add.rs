@@ -1,4 +1,3 @@
-use crate::agent::client::AgentClient;
 use crate::cmd::common::{load_aliases, load_vault};
 use crate::util::errors::{ObscuraError, ObscuraResult};
 use crate::util::io::{prompt_secret_value, prompt_yes_no};
@@ -58,10 +57,6 @@ fn add_new_secret(alias: &str, force_global: bool, force_project: bool) -> Obscu
     aliases_data.add_alias(alias.to_string(), value, &dek)?;
     encrypt_and_save_vault(&vault_info.path, &vault_file, &aliases_data, &dek)?;
 
-    if AgentClient::is_running() {
-        let _ = AgentClient::store_dek(&vault_info.path, &dek);
-    }
-
     let scope = match vault_info.vault_type {
         VaultType::Global => "global",
         VaultType::Project => "project",
@@ -104,10 +99,6 @@ fn add_from_global(alias: &str) -> ObscuraResult<()> {
         &project_aliases,
         &project_dek,
     )?;
-
-    if AgentClient::is_running() {
-        let _ = AgentClient::store_dek(&project_vault_info.path, &project_dek);
-    }
 
     println!("Copied '{}' from global vault to project vault", alias);
     Ok(())

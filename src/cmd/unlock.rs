@@ -1,14 +1,20 @@
-use crate::agent::client::AgentClient;
-use crate::agent::server::AgentServer;
+use crate::session::SessionStore;
 use crate::util::errors::{ObscuraError, ObscuraResult};
+use crate::util::io::{get_passphrase_from_env, prompt_passphrase};
+use crate::vault::file::{decrypt_vault, read_vault_file, vault_exists};
+use crate::vault::manager::VaultManager;
 use clap::Args;
-use std::thread;
-use std::time::Duration;
 
 #[derive(Args)]
 pub struct UnlockArgs {
-    #[arg(long, default_value = "30", help = "Agent timeout in minutes")]
+    #[arg(long, default_value_t = 60, help = "Cache timeout in minutes")]
     pub timeout: u64,
+
+    #[arg(long, help = "Target the global vault")]
+    pub global: bool,
+
+    #[arg(long, help = "Target the project vault for the current directory")]
+    pub project: bool,
 }
 
 pub fn handle_unlock(args: UnlockArgs) -> ObscuraResult<()> {
@@ -16,25 +22,34 @@ pub fn handle_unlock(args: UnlockArgs) -> ObscuraResult<()> {
         return Err(ObscuraError::InvalidTimeout);
     }
 
-    if AgentClient::is_running() {
-        println!("Agent is already running");
-        return Ok(());
+    let vault_info = VaultManager::resolve_vault(args.global, args.project)?;
+
+    if !vault_exists(&vault_info.path) {
+        return Err(ObscuraError::VaultNotFound);
     }
 
-    let server = AgentServer::new(args.timeout);
+    let passphrase = match get_passphrase_from_env() {
+        Some(value) => value,
+        None => prompt_passphrase()?,
+    };
 
-    thread::spawn(move || {
-        if let Err(e) = server.run() {
-            eprintln!("Agent error: {}", e);
-        }
-    });
+    let vault_file = read_vault_file(&vault_info.path)?;
+    let (dek, _) = decrypt_vault(&vault_file, &passphrase)?;
 
-    thread::sleep(Duration::from_millis(100));
-
-    if AgentClient::is_running() {
-        println!("Agent started with {} minute timeout", args.timeout);
-        Ok(())
+    SessionStore::store_dek(&vault_info.path, &dek, args.timeout)?;
+    let scope = match vault_info.vault_type {
+        crate::vault::manager::VaultType::Global => "global",
+        crate::vault::manager::VaultType::Project => "project",
+    };
+    let unit = if args.timeout == 1 {
+        "minute"
     } else {
-        Err(ObscuraError::AgentNotRunning)
-    }
+        "minutes"
+    };
+    println!(
+        "Cached vault key for {} {} (target: {})",
+        args.timeout, unit, scope
+    );
+
+    Ok(())
 }

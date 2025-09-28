@@ -1,5 +1,6 @@
 use crate::util::errors::{ObscuraError, ObscuraResult};
 use rpassword::read_password;
+use std::env;
 use std::io::{self, Write};
 
 pub fn prompt_passphrase() -> ObscuraResult<String> {
@@ -28,6 +29,9 @@ pub fn prompt_passphrase_confirmation() -> ObscuraResult<String> {
 }
 
 pub fn prompt_secret_value(alias: &str) -> ObscuraResult<String> {
+    if let Ok(value) = env::var("OBSCURA_SECRET_VALUE") {
+        return Ok(value);
+    }
     print!("Enter value for '{}': ", alias);
     io::stdout()
         .flush()

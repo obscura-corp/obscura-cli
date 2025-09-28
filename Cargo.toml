@@ -2,10 +2,10 @@
 name = "obscura-cli"
 version = "0.1.0"
 edition = "2021"
-authors = ["Your Name <your.email@example.com>"]
+authors = ["Usman Khan ukhan2024@outlook.com"]
 description = "A local API-key vault CLI secured by passphrase"
 license = "MIT"
-repository = "https://github.com/yourusername/obscura-cli"
+repository = "https://github.com/obscura-corp/obscura-cli"
 keywords = ["cli", "vault", "security", "api-keys", "encryption"]
 categories = ["command-line-utilities", "security"]
 
@@ -20,15 +20,17 @@ serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 zeroize = { version = "1.7", features = ["derive"] }
 rand = "0.8"
-rand_core = "0.6"
 argon2 = "0.5"
 chacha20poly1305 = "0.10"
 blake3 = "1.5"
 rpassword = "7.3"
 chrono = { version = "0.4", features = ["serde"] }
 directories = "5.0"
-fs2 = "0.4"
-interprocess = "1.2"
 hex = "0.4"
 base64 = "0.21"
-bincode = "1.3"
+
+[dev-dependencies]
+assert_cmd = "2.0"
+predicates = "3.0"
+serial_test = "3.0"
+tempfile = "3.10"
