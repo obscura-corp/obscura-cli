@@ -4,9 +4,10 @@ on:
   push:
     tags:
       - 'v*'
+  workflow_dispatch:
 
 jobs:
-  build:
+  build-linux-windows:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -14,7 +15,7 @@ jobs:
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
         with:
-          targets: x86_64-unknown-linux-gnu,x86_64-pc-windows-gnu,x86_64-apple-darwin,aarch64-apple-darwin
+          targets: x86_64-unknown-linux-gnu,x86_64-pc-windows-gnu
           
       - name: Install cross-compilation dependencies
         run: |
@@ -27,18 +28,76 @@ jobs:
       - name: Build for Windows
         run: cargo build --release --target x86_64-pc-windows-gnu
         
-      - name: Build for macOS Intel
-        run: cargo build --release --target x86_64-apple-darwin
+      - name: Upload Linux binary
+        uses: actions/upload-artifact@v3
+        with:
+          name: linux-binary
+          path: target/x86_64-unknown-linux-gnu/release/obscura
+          
+      - name: Upload Windows binary
+        uses: actions/upload-artifact@v3
+        with:
+          name: windows-binary
+          path: target/x86_64-pc-windows-gnu/release/obscura.exe
+
+  build-macos:
+    runs-on: macos-latest
+    strategy:
+      matrix:
+        target: [x86_64-apple-darwin, aarch64-apple-darwin]
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+          
+      - name: Build for macOS
+        run: cargo build --release --target ${{ matrix.target }}
         
-      - name: Build for macOS ARM
-        run: cargo build --release --target aarch64-apple-darwin
-        
+      - name: Upload macOS binary
+        uses: actions/upload-artifact@v3
+        with:
+          name: macos-${{ matrix.target }}-binary
+          path: target/${{ matrix.target }}/release/obscura
+
+  create-release:
+    needs: [build-linux-windows, build-macos]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Download Linux binary
+        uses: actions/download-artifact@v3
+        with:
+          name: linux-binary
+          path: ./binaries
+          
+      - name: Download Windows binary
+        uses: actions/download-artifact@v3
+        with:
+          name: windows-binary
+          path: ./binaries
+          
+      - name: Download macOS Intel binary
+        uses: actions/download-artifact@v3
+        with:
+          name: macos-x86_64-apple-darwin-binary
+          path: ./binaries
+          
+      - name: Download macOS ARM binary
+        uses: actions/download-artifact@v3
+        with:
+          name: macos-aarch64-apple-darwin-binary
+          path: ./binaries
+          
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
           files: |
-            target/x86_64-unknown-linux-gnu/release/obscura
-            target/x86_64-pc-windows-gnu/release/obscura.exe
-            target/x86_64-apple-darwin/release/obscura
-            target/aarch64-apple-darwin/release/obscura
+            binaries/obscura
+            binaries/obscura.exe
+            binaries/obscura
+            binaries/obscura
           generate_release_notes: true
