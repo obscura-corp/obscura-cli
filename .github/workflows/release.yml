@@ -1,158 +1,158 @@
----
 name: Release
+
 on:
   push:
     tags:
-      - v*
-  workflow_dispatch: null
+      - "v*"
+  workflow_dispatch:
+
 permissions:
-  contents: write
+  contents: write  # required for creating GitHub Releases
+
 env:
-  BIN_NAME: obscura
+  BIN_NAME: obscura  # Adjust if your Cargo binary is named differently
+
 jobs:
   linux:
-    name: Build Linux (x86_64 + aarch64)
+    name: Build Linux (x86_64)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
         with:
-          targets: x86_64-unknown-linux-gnu,aarch64-unknown-linux-gnu
-      - name: Install cross for aarch64
-        run: cargo install cross --git https://github.com/cross-rs/cross
-      - name: Build x86_64-unknown-linux-gnu
+          targets: x86_64-unknown-linux-gnu
+
+      - name: Build (x86_64-unknown-linux-gnu)
         run: cargo build --release --target x86_64-unknown-linux-gnu
+
       - name: Strip (x86_64)
         run: strip target/x86_64-unknown-linux-gnu/release/${{ env.BIN_NAME }} || true
-      - name: Package (x86_64)
-        run: >
+
+      - name: Package (tar.gz)
+        run: |
           mkdir -p dist
-
           cp target/x86_64-unknown-linux-gnu/release/${{ env.BIN_NAME }} dist/${{ env.BIN_NAME }}
-
           tar -C dist -czf obscura-linux-x86_64.tar.gz ${{ env.BIN_NAME }}
-      - name: Build aarch64-unknown-linux-gnu (cross)
-        run: cross build --release --target aarch64-unknown-linux-gnu
-      - name: Strip (aarch64)
-        run: aarch64-linux-gnu-strip target/aarch64-unknown-linux-gnu/release/${{
-          env.BIN_NAME }} || true
-      - name: Package (aarch64)
-        run: >
-          mkdir -p dist-aarch64
 
-          cp target/aarch64-unknown-linux-gnu/release/${{ env.BIN_NAME }} dist-aarch64/${{ env.BIN_NAME }}
-
-          tar -C dist-aarch64 -czf obscura-linux-aarch64.tar.gz ${{ env.BIN_NAME }}
-      - name: Upload Linux artifacts
+      - name: Upload Linux artifact
         uses: actions/upload-artifact@v4
         with:
-          name: linux-artifacts
-          path: |
-            obscura-linux-x86_64.tar.gz
-            obscura-linux-aarch64.tar.gz
+          name: linux-artifact
+          path: obscura-linux-x86_64.tar.gz
+
   macos:
-    name: Build macOS (x86_64 + aarch64)
+    name: Build macOS (x86_64 + arm64)
     runs-on: macos-latest
     strategy:
       matrix:
-        target:
-          - x86_64-apple-darwin
-          - aarch64-apple-darwin
+        target: [x86_64-apple-darwin, aarch64-apple-darwin]
     steps:
       - uses: actions/checkout@v4
+
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
         with:
           targets: ${{ matrix.target }}
+
       - name: Build (${{ matrix.target }})
         run: cargo build --release --target ${{ matrix.target }}
+
       - name: Strip (${{ matrix.target }})
+        run: strip target/${{ matrix.target }}/release/${{ env.BIN_NAME }} || true
+
+      - name: Package (tar.gz)
         run: |
-          BIN="target/${{ matrix.target }}/release/${{ env.BIN_NAME }}"
-          strip "$BIN" || true
-      - name: Package (${{ matrix.target }})
-        run: >
           mkdir -p dist
-
           cp target/${{ matrix.target }}/release/${{ env.BIN_NAME }} dist/${{ env.BIN_NAME }}
-
           if [[ "${{ matrix.target }}" == "x86_64-apple-darwin" ]]; then
             tar -C dist -czf obscura-macos-x86_64.tar.gz ${{ env.BIN_NAME }}
           else
             tar -C dist -czf obscura-macos-aarch64.tar.gz ${{ env.BIN_NAME }}
           fi
+
       - name: Upload macOS artifact (${{ matrix.target }})
         uses: actions/upload-artifact@v4
         with:
           name: macos-${{ matrix.target }}-artifact
-          path: |
-            obscura-macos-*.tar.gz
+          path: obscura-macos-*.tar.gz
+
   windows:
     name: Build Windows (x86_64 MSVC)
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
+
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
         with:
           targets: x86_64-pc-windows-msvc
+
       - name: Build (x86_64-pc-windows-msvc)
         run: cargo build --release --target x86_64-pc-windows-msvc
+
       - name: Package (zip)
         shell: pwsh
-        run: >
+        run: |
           New-Item -ItemType Directory -Path dist | Out-Null
-
           Copy-Item "target/x86_64-pc-windows-msvc/release/${{ env.BIN_NAME }}.exe" "dist/${{ env.BIN_NAME }}.exe"
-
           Compress-Archive -Path "dist/${{ env.BIN_NAME }}.exe" -DestinationPath "obscura-windows-x86_64.zip" -Force
+
       - name: Upload Windows artifact
         uses: actions/upload-artifact@v4
         with:
           name: windows-artifact
           path: obscura-windows-x86_64.zip
+
   release:
     name: Create GitHub Release
-    needs:
-      - linux
-      - macos
-      - windows
+    needs: [linux, macos, windows]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Download artifacts (Linux)
+
+      - name: Download Linux artifact
         uses: actions/download-artifact@v4
         with:
-          name: linux-artifacts
-          path: ./release
-      - name: Download artifacts (macOS x86_64)
+          name: linux-artifact
+        # Defaults to downloading into a directory named by the artifact (linux-artifact)
+
+      - name: Download macOS x86_64 artifact
         uses: actions/download-artifact@v4
         with:
           name: macos-x86_64-apple-darwin-artifact
-          path: ./release
-      - name: Download artifacts (macOS aarch64)
+
+      - name: Download macOS aarch64 artifact
         uses: actions/download-artifact@v4
         with:
           name: macos-aarch64-apple-darwin-artifact
-          path: ./release
-      - name: Download artifacts (Windows)
+
+      - name: Download Windows artifact
         uses: actions/download-artifact@v4
         with:
           name: windows-artifact
-          path: ./release
-      - name: List gathered files
-        run: ls -l ./release
+
+      - name: Collect artifacts into ./release
+        run: |
+          mkdir -p release
+          cp linux-artifact/obscura-linux-x86_64.tar.gz release/
+          cp macos-x86_64-apple-darwin-artifact/obscura-macos-x86_64.tar.gz release/
+          cp macos-aarch64-apple-darwin-artifact/obscura-macos-aarch64.tar.gz release/
+          cp windows-artifact/obscura-windows-x86_64.zip release/
+          ls -l release
+
       - name: Generate SHA256SUMS
         run: |
           cd release
           sha256sum obscura-*.tar.gz obscura-*.zip > SHA256SUMS
+          cat SHA256SUMS
+
       - name: Create/Update Release
         uses: softprops/action-gh-release@v2
         with:
           files: |
             release/obscura-linux-x86_64.tar.gz
-            release/obscura-linux-aarch64.tar.gz
             release/obscura-macos-x86_64.tar.gz
             release/obscura-macos-aarch64.tar.gz
             release/obscura-windows-x86_64.zip
