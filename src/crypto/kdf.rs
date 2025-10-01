@@ -4,8 +4,8 @@ use rand::{rngs::OsRng, RngCore};
 use std::env;
 use zeroize::ZeroizeOnDrop;
 
-const DEFAULT_MEMORY_KIB: u32 = 65_536;
-const DEFAULT_TIME: u32 = 1;
+const DEFAULT_MEMORY_KIB: u32 = 131_072; 
+const DEFAULT_TIME: u32 = 2;             
 const DEFAULT_LANES: u32 = 1;
 const MIN_MEMORY_KIB: u32 = 65_536;
 const MAX_MEMORY_KIB: u32 = 524_288;

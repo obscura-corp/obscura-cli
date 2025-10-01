@@ -54,6 +54,9 @@ enum Commands {
         overwrite: bool,
     },
 
+    #[command(about = "Run a command with secrets injected as environment variables")]
+    Run(run::RunArgs),
+
     #[command(about = "Clear cached vault keys")]
     Lock(lock::LockArgs),
 
@@ -90,6 +93,7 @@ fn main() -> Result<()> {
                 std::process::exit(1);
             }
         }
+        Commands::Run(args) => handle_run(args)?,
         Commands::Lock(args) => handle_lock(args)?,
         Commands::Unlock(args) => handle_unlock(args)?,
     }
