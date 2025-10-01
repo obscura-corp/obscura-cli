@@ -5,7 +5,7 @@ edition = "2021"
 authors = ["Usman Khan ukhan2024@outlook.com"]
 description = "A local API-key vault CLI secured by passphrase"
 license = "MIT"
-repository = "https://github.com/obscura-corp/obscura-cli"
+repository = "https://github.com/obscura-os/obscura-cli"
 keywords = ["cli", "vault", "security", "api-keys", "encryption"]
 categories = ["command-line-utilities", "security"]
 
