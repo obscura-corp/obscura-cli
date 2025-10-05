@@ -22,7 +22,7 @@ struct Cli {
 
 #[derive(Subcommand)]
 enum Commands {
-    #[command(about = "Initialize a vault (global or project)")]
+    #[command(about = "Initialize a vault (project by default, global with --global)")]
     Init(init::InitArgs),
 
     #[command(about = "Add a secret to the vault")]
@@ -36,6 +36,9 @@ enum Commands {
 
     #[command(about = "Remove a secret from the vault")]
     Remove(remove::RemoveArgs),
+
+    #[command(about = "Delete an entire vault")]
+    Delete(delete::DeleteArgs),
 
     #[command(about = "Rotate a secret in the vault")]
     Rotate(rotate::RotateArgs),
@@ -73,6 +76,7 @@ fn main() -> Result<()> {
         Commands::Get(args) => handle_get(args)?,
         Commands::List(args) => handle_list(args)?,
         Commands::Remove(args) => handle_remove(args)?,
+        Commands::Delete(args) => handle_delete(args)?,
         Commands::Rotate(args) => handle_rotate(args)?,
         Commands::Export {
             dotenv,

@@ -2,15 +2,18 @@ use crate::util::errors::{ObscuraError, ObscuraResult};
 use argon2::{Algorithm, Argon2, Params, Version};
 use rand::{rngs::OsRng, RngCore};
 use std::env;
+use std::sync::OnceLock;
 use zeroize::ZeroizeOnDrop;
 
-const DEFAULT_MEMORY_KIB: u32 = 131_072; 
-const DEFAULT_TIME: u32 = 2;             
+const DEFAULT_MEMORY_KIB: u32 = 131_072;
+const DEFAULT_TIME: u32 = 2;
 const DEFAULT_LANES: u32 = 1;
 const MIN_MEMORY_KIB: u32 = 65_536;
 const MAX_MEMORY_KIB: u32 = 524_288;
 const MIN_TIME: u32 = 1;
 const MAX_TIME: u32 = 6;
+
+static KDF_PARAMS_CACHE: OnceLock<(u32, u32)> = OnceLock::new();
 
 #[derive(Clone, ZeroizeOnDrop)]
 pub struct KdfParams {
@@ -25,10 +28,11 @@ impl KdfParams {
         let mut salt = [0u8; 16];
         OsRng.fill_bytes(&mut salt);
 
+        let (memory_kib, time) = get_cached_kdf_params();
         Self {
             salt,
-            memory_kib: configured_memory_kib(),
-            time: configured_time(),
+            memory_kib,
+            time,
             lanes: DEFAULT_LANES,
         }
     }
@@ -85,16 +89,16 @@ fn derive_key(passphrase: &str, params: &KdfParams) -> ObscuraResult<[u8; 32]> {
     Ok(key)
 }
 
-fn configured_memory_kib() -> u32 {
-    env_value("OBSCURA_KDF_MEM_KIB")
-        .map(|value| value.clamp(MIN_MEMORY_KIB, MAX_MEMORY_KIB))
-        .unwrap_or(DEFAULT_MEMORY_KIB)
-}
-
-fn configured_time() -> u32 {
-    env_value("OBSCURA_KDF_TIME")
-        .map(|value| value.clamp(MIN_TIME, MAX_TIME))
-        .unwrap_or(DEFAULT_TIME)
+fn get_cached_kdf_params() -> (u32, u32) {
+    *KDF_PARAMS_CACHE.get_or_init(|| {
+        let memory_kib = env_value("OBSCURA_KDF_MEM_KIB")
+            .map(|value| value.clamp(MIN_MEMORY_KIB, MAX_MEMORY_KIB))
+            .unwrap_or(DEFAULT_MEMORY_KIB);
+        let time = env_value("OBSCURA_KDF_TIME")
+            .map(|value| value.clamp(MIN_TIME, MAX_TIME))
+            .unwrap_or(DEFAULT_TIME);
+        (memory_kib, time)
+    })
 }
 
 fn env_value(name: &str) -> Option<u32> {

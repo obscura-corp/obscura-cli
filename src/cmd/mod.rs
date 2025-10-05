@@ -1,5 +1,6 @@
 pub mod add;
 pub mod common;
+pub mod delete;
 pub mod export_dotenv;
 pub mod get;
 pub mod init;
@@ -10,6 +11,7 @@ pub mod rotate;
 pub mod run;
 pub mod unlock;
 pub use add::handle_add;
+pub use delete::handle_delete;
 pub use export_dotenv::handle_export_dotenv;
 pub use get::handle_get;
 pub use init::handle_init;

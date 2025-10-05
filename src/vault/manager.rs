@@ -4,6 +4,7 @@ use crate::util::paths::{
     get_project_vault_path,
 };
 use serde::{Deserialize, Serialize};
+use std::fs;
 use std::path::{Path, PathBuf};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -86,6 +87,34 @@ impl VaultManager {
         let meta_json =
             serde_json::to_string_pretty(&meta).map_err(|_| ObscuraError::FilePermissionError)?;
         std::fs::write(&meta_path, meta_json).map_err(|_| ObscuraError::FilePermissionError)?;
+        Ok(())
+    }
+
+    pub fn delete_vault(vault_info: &VaultInfo) -> ObscuraResult<()> {
+        match vault_info.vault_type {
+            VaultType::Global => Self::delete_global_vault(&vault_info.path),
+            VaultType::Project => Self::delete_project_vault(&vault_info.path),
+        }
+    }
+
+    fn delete_global_vault(path: &Path) -> ObscuraResult<()> {
+        if path.exists() {
+            fs::remove_file(path).map_err(|_| ObscuraError::FilePermissionError)?;
+        }
+        Ok(())
+    }
+
+    fn delete_project_vault(path: &Path) -> ObscuraResult<()> {
+        if path.exists() {
+            fs::remove_file(path).map_err(|_| ObscuraError::FilePermissionError)?;
+        }
+
+        if let Some(parent) = path.parent() {
+            if parent.exists() {
+                fs::remove_dir_all(parent).map_err(|_| ObscuraError::FilePermissionError)?;
+            }
+        }
+
         Ok(())
     }
 }

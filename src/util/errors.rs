@@ -19,7 +19,7 @@ impl fmt::Display for ObscuraError {
         match self {
             ObscuraError::VaultNotFound => write!(f, "Vault not found"),
             ObscuraError::AliasNotFound(alias) => write!(f, "Alias '{}' not found", alias),
-            ObscuraError::DecryptionFailed => write!(f, "Decryption failed"),
+            ObscuraError::DecryptionFailed => write!(f, "Decryption failed, re-enter passphrase or try 'obscura unlock' or 'obscura lock' to refresh the vault"),
             ObscuraError::EncryptionFailed => write!(f, "Encryption failed"),
             ObscuraError::FilePermissionError => write!(f, "File permission error"),
             ObscuraError::InvalidVaultFormat => write!(f, "Invalid vault format"),

@@ -6,15 +6,15 @@ use clap::Args;
 
 #[derive(Args)]
 pub struct InitArgs {
-    #[arg(long, help = "Initialize a project vault for the current directory")]
-    pub project: bool,
+    #[arg(long, help = "Initialize the global vault")]
+    pub global: bool,
 }
 
 pub fn handle_init(args: InitArgs) -> ObscuraResult<()> {
-    if args.project {
-        init_project_vault()
-    } else {
+    if args.global {
         init_global_vault()
+    } else {
+        init_project_vault()
     }
 }
 
