@@ -1,6 +1,6 @@
 [package]
 name = "obscura-cli"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2021"
 authors = ["Usman Khan ukhan2024@outlook.com"]
 description = "A local API-key vault CLI secured by passphrase"
