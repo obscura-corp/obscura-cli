@@ -151,11 +151,10 @@ impl SessionStore {
 
     fn derive_session_key() -> ObscuraResult<AeadKey> {
         let system_info = format!(
-            "{}-{}-{}-{}",
+            "{}-{}-{}",
             std::env::var("USER").unwrap_or_else(|_| "unknown".to_string()),
             std::env::var("HOME").unwrap_or_else(|_| "unknown".to_string()),
-            std::env::var("HOSTNAME").unwrap_or_else(|_| "unknown".to_string()),
-            std::env::var("PATH").unwrap_or_else(|_| "unknown".to_string())
+            std::env::var("HOSTNAME").unwrap_or_else(|_| "unknown".to_string())
         );
 
         let mut key = [0u8; 32];
