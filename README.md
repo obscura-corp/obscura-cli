@@ -1,6 +1,12 @@
-# Obscura CLI
+<div align="center">
+
+# 🔐 <span style="color: #ff69b4;">Obscura CLI</span>
+
+<img src="https://img.shields.io/github/v/release/obscura-os/obscura-cli?color=8338ec&style=for-the-badge"> <img src="https://img.shields.io/github/stars/obscura-os/obscura-cli?color=8338ec&style=for-the-badge">
 
 **Obscura (Local) — passphrase-secured API key vault for developers. No cloud. No telemetry. Local dev only.**
+
+</div>
 
 A single-binary, cross-platform local API-key vault CLI secured only by a passphrase. Obscura provides secure storage for API keys and secrets with strong encryption, supporting both global and project-specific vaults.
 
