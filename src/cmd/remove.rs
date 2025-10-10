@@ -10,10 +10,10 @@ pub struct RemoveArgs {
     #[arg(help = "Alias name to remove")]
     pub alias: String,
 
-    #[arg(long, help = "Remove from the global vault")]
+    #[arg(long, short = 'g', help = "Remove from the global vault")]
     pub global: bool,
 
-    #[arg(long, help = "Remove from the project vault")]
+    #[arg(long, short = 'p', help = "Remove from the project vault")]
     pub project: bool,
 
     #[arg(long, help = "Skip the confirmation prompt")]

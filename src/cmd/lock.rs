@@ -4,10 +4,10 @@ use clap::Args;
 
 #[derive(Args)]
 pub struct LockArgs {
-    #[arg(long, help = "Target the global vault")]
+    #[arg(long, short = 'g', help = "Target the global vault")]
     pub global: bool,
 
-    #[arg(long, help = "Target the project vault for the current directory")]
+    #[arg(long, short = 'p', help = "Target the project vault for the current directory")]
     pub project: bool,
 }
 

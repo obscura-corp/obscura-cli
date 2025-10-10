@@ -6,7 +6,7 @@ use clap::Args;
 
 #[derive(Args)]
 pub struct InitArgs {
-    #[arg(long, help = "Initialize the global vault")]
+    #[arg(long, short = 'g', help = "Initialize the global vault")]
     pub global: bool,
 }
 

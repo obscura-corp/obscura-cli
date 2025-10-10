@@ -8,10 +8,10 @@ use std::path::Path;
 
 #[derive(Args)]
 pub struct ExportDotenvArgs {
-    #[arg(long, help = "Export from the global vault")]
+    #[arg(long, short = 'g', help = "Export from the global vault")]
     pub global: bool,
 
-    #[arg(long, help = "Export from the project vault")]
+    #[arg(long, short = 'p', help = "Export from the project vault")]
     pub project: bool,
 
     #[arg(long, help = "Write output to this file path")]

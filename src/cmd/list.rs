@@ -7,10 +7,10 @@ use serde_json::{json, to_string_pretty};
 
 #[derive(Args)]
 pub struct ListArgs {
-    #[arg(long, help = "List entries from the global vault")]
+    #[arg(long, short = 'g', help = "List entries from the global vault")]
     pub global: bool,
 
-    #[arg(long, help = "List entries from the project vault")]
+    #[arg(long, short = 'p', help = "List entries from the project vault")]
     pub project: bool,
 
     #[arg(long, help = "Render output as JSON")]

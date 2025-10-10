@@ -10,10 +10,10 @@ pub struct AddArgs {
     #[arg(help = "Alias name for the secret")]
     pub alias: String,
 
-    #[arg(long, help = "Operate on the global vault")]
+    #[arg(long, short = 'g', help = "Operate on the global vault")]
     pub global: bool,
 
-    #[arg(long, help = "Operate on the project vault")]
+    #[arg(long, short = 'p', help = "Operate on the project vault")]
     pub project: bool,
 
     #[arg(

@@ -10,10 +10,10 @@ pub struct RotateArgs {
     #[arg(help = "Alias name to rotate")]
     pub alias: String,
 
-    #[arg(long, help = "Rotate in the global vault")]
+    #[arg(long, short = 'g', help = "Rotate in the global vault")]
     pub global: bool,
 
-    #[arg(long, help = "Rotate in the project vault")]
+    #[arg(long, short = 'p', help = "Rotate in the project vault")]
     pub project: bool,
 }
 

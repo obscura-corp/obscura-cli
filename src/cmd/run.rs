@@ -9,10 +9,10 @@ use std::process::Command;
 
 #[derive(Args)]
 pub struct RunArgs {
-    #[arg(long, help = "Use the global vault")]
+    #[arg(long, short = 'g', help = "Use the global vault")]
     pub global: bool,
 
-    #[arg(long, help = "Use the project vault")]
+    #[arg(long, short = 'p', help = "Use the project vault")]
     pub project: bool,
 
     #[arg(help = "Command and arguments to execute (after --)")]

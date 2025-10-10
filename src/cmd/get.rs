@@ -9,10 +9,10 @@ pub struct GetArgs {
     #[arg(help = "Alias name to retrieve")]
     pub alias: String,
 
-    #[arg(long, help = "Read from the global vault")]
+    #[arg(long, short = 'g', help = "Read from the global vault")]
     pub global: bool,
 
-    #[arg(long, help = "Read from the project vault")]
+    #[arg(long, short = 'p', help = "Read from the project vault")]
     pub project: bool,
 }
 

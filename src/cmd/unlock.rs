@@ -10,10 +10,10 @@ pub struct UnlockArgs {
     #[arg(long, default_value_t = 60, help = "Cache timeout in minutes")]
     pub timeout: u64,
 
-    #[arg(long, help = "Target the global vault")]
+    #[arg(long, short = 'g', help = "Target the global vault")]
     pub global: bool,
 
-    #[arg(long, help = "Target the project vault for the current directory")]
+    #[arg(long, short = 'p', help = "Target the project vault for the current directory")]
     pub project: bool,
 }
 

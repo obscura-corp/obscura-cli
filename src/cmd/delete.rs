@@ -7,10 +7,10 @@ use clap::Args;
 
 #[derive(Args)]
 pub struct DeleteArgs {
-    #[arg(long, help = "Delete the global vault")]
+    #[arg(long, short = 'g', help = "Delete the global vault")]
     pub global: bool,
 
-    #[arg(long, help = "Delete the project vault for the current directory")]
+    #[arg(long, short = 'p', help = "Delete the project vault for the current directory")]
     pub project: bool,
 
     #[arg(long, help = "Skip the confirmation prompt")]

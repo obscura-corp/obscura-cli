@@ -34,6 +34,9 @@ enum Commands {
     #[command(about = "List secrets in the vault")]
     List(list::ListArgs),
 
+    #[command(about = "List secrets in the vault (alias for 'list')")]
+    Ls(list::ListArgs),
+
     #[command(about = "Remove a secret from the vault")]
     Remove(remove::RemoveArgs),
 
@@ -47,9 +50,9 @@ enum Commands {
     Export {
         #[arg(long, help = "Export in dotenv format")]
         dotenv: bool,
-        #[arg(long, help = "Use the global vault")]
+        #[arg(long, short = 'g', help = "Use the global vault")]
         global: bool,
-        #[arg(long, help = "Use the project vault")]
+        #[arg(long, short = 'p', help = "Use the project vault")]
         project: bool,
         #[arg(long, help = "Destination file path")]
         output: Option<String>,
@@ -75,6 +78,7 @@ fn main() -> Result<()> {
         Commands::Add(args) => handle_add(args)?,
         Commands::Get(args) => handle_get(args)?,
         Commands::List(args) => handle_list(args)?,
+        Commands::Ls(args) => handle_list(args)?,
         Commands::Remove(args) => handle_remove(args)?,
         Commands::Delete(args) => handle_delete(args)?,
         Commands::Rotate(args) => handle_rotate(args)?,
