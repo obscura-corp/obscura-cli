@@ -31,6 +31,9 @@ A single-binary, cross-platform local API-key vault CLI secured only by a passph
 curl -fsSL https://www.obscura.team/install.sh | sh
 ```
 
+### For windows use the direct download from website (might block download on mac so better to use curl)
+    https://www.obscura.team/download
+
 ### From Repository (requires rust)
 
 ```bash
@@ -52,6 +55,8 @@ obscura get openai
 
 # List all secrets
 obscura list
+# or use the shorthand
+obscura ls
 ```
 
 ### Project Vault
@@ -69,6 +74,8 @@ obscura add stripe --from-global  # Copy from global vault
 
 # List project secrets
 obscura list
+# or use the shorthand
+obscura ls
 
 # Export as dotenv
 obscura export --dotenv --output .env.local
@@ -81,7 +88,7 @@ obscura export --dotenv --output .env.local
 Initialize a vault (project by default, global with flag).
 
 **Options:**
-- `--global` - Initialize the global vault
+- `--global`, `-g` - Initialize the global vault
 
 **Examples:**
 ```bash
@@ -97,8 +104,8 @@ Add a secret to the vault.
 - `<alias>` - Alias name for the secret
 
 **Options:**
-- `--global` - Operate on the global vault
-- `--project` - Operate on the project vault
+- `--global`, `-g` - Operate on the global vault
+- `--project`, `-p` - Operate on the project vault
 - `--from-global` - Copy the alias from the global vault into the project vault
 
 **Examples:**
@@ -116,8 +123,8 @@ Retrieve a secret from the vault.
 - `<alias>` - Alias name to retrieve
 
 **Options:**
-- `--global` - Read from the global vault
-- `--project` - Read from the project vault
+- `--global`, `-g` - Read from the global vault
+- `--project`, `-p` - Read from the project vault
 
 **Examples:**
 ```bash
@@ -125,18 +132,19 @@ obscura get openai                    # Get from project vault (if exists) or gl
 obscura get stripe --global           # Get from global vault
 ```
 
-### `obscura list [OPTIONS]`
+### `obscura list [OPTIONS]` / `obscura ls [OPTIONS]`
 
-List secrets in the vault.
+List secrets in the vault. `ls` is an alias for `list`.
 
 **Options:**
-- `--global` - List entries from the global vault
-- `--project` - List entries from the project vault
+- `--global`, `-g` - List entries from the global vault
+- `--project`, `-p` - List entries from the project vault
 - `--json` - Render output as JSON
 
 **Examples:**
 ```bash
 obscura list                          # List from project vault (if exists) or global
+obscura ls                            # Same as list (shorthand)
 obscura list --json                   # List as JSON format
 obscura list --global                 # List from global vault
 ```
@@ -149,8 +157,8 @@ Remove a secret from the vault.
 - `<alias>` - Alias name to remove
 
 **Options:**
-- `--global` - Remove from the global vault
-- `--project` - Remove from the project vault
+- `--global`, `-g` - Remove from the global vault
+- `--project`, `-p` - Remove from the project vault
 - `--yes` - Skip the confirmation prompt
 
 **Examples:**
@@ -164,8 +172,8 @@ obscura remove stripe --global        # Remove from global vault
 Delete an entire vault and all stored secrets.
 
 **Options:**
-- `--global` - Delete the global vault
-- `--project` - Delete the project vault for the current directory
+- `--global`, `-g` - Delete the global vault
+- `--project`, `-p` - Delete the project vault for the current directory
 - `--yes` - Skip the confirmation prompt
 
 **Examples:**
@@ -182,8 +190,8 @@ Rotate (update) a secret in the vault.
 - `<alias>` - Alias name to rotate
 
 **Options:**
-- `--global` - Rotate in the global vault
-- `--project` - Rotate in the project vault
+- `--global`, `-g` - Rotate in the global vault
+- `--project`, `-p` - Rotate in the project vault
 
 **Examples:**
 ```bash
@@ -196,8 +204,8 @@ obscura rotate stripe --global        # Rotate in global vault
 Export secrets as dotenv content.
 
 **Options:**
-- `--global` - Export from the global vault
-- `--project` - Export from the project vault
+- `--global`, `-g` - Export from the global vault
+- `--project`, `-p` - Export from the project vault
 - `--output <path>` - Write output to this file path
 - `--overwrite` - Allow overwriting the output file
 
@@ -216,8 +224,8 @@ Run a command with secrets injected as environment variables.
 - `<command>` - Command and arguments to execute (after --)
 
 **Options:**
-- `--global` - Use the global vault
-- `--project` - Use the project vault
+- `--global`, `-g` - Use the global vault
+- `--project`, `-p` - Use the project vault
 
 **Examples:**
 ```bash
@@ -232,8 +240,8 @@ Cache vault keys for a limited time to avoid repeated passphrase prompts.
 
 **Options:**
 - `--timeout <minutes>` - Cache timeout in minutes (default: 60)
-- `--global` - Target the global vault
-- `--project` - Target the project vault for the current directory
+- `--global`, `-g` - Target the global vault
+- `--project`, `-p` - Target the project vault for the current directory
 
 **Examples:**
 ```bash
@@ -246,8 +254,8 @@ obscura unlock --global               # Cache global vault
 Clear cached vault keys.
 
 **Options:**
-- `--global` - Target the global vault
-- `--project` - Target the project vault for the current directory
+- `--global`, `-g` - Target the global vault
+- `--project`, `-p` - Target the project vault for the current directory
 
 **Examples:**
 ```bash
@@ -261,7 +269,7 @@ Obscura uses a smart vault resolution system:
 
 1. **Project vault** - If you're in a directory with a project vault, it's used by default
 2. **Global vault** - Falls back to the global vault if no project vault exists
-3. **Force flags** - Use `--global` or `--project` to override the default behavior
+3. **Force flags** - Use `--global`/`-g` or `--project`/`-p` to override the default behavior
 
 ## Security
 
@@ -372,6 +380,7 @@ obscura lock
 ```bash
 # Add to global vault
 obscura add github_token --global
+obscura add api_key -g
 
 # Copy to project
 cd myapp
@@ -381,7 +390,10 @@ obscura add github_token --from-global
 obscura add myapp_database_url
 
 # List project secrets
-obscura list
+obscura ls
+
+# List global secrets
+obscura ls -g
 ```
 
 ## Security Notice
