@@ -32,3 +32,4 @@ agent.sock
 # Test files
 test_vault.enc
 test_meta.json
+/tests/

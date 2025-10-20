@@ -31,8 +31,8 @@ A single-binary, cross-platform local API-key vault CLI secured only by a passph
 curl -fsSL https://www.obscura.team/install.sh | sh
 ```
 
-### For windows use the direct download from website (might block download on mac so better to use curl)
-    https://www.obscura.team/download
+### Install command for windows (Must run terminal as administrator and may need to disable Windows Defender)
+    iwr -useb https://www.obscura.team/install.ps1 | iex
 
 ### From Repository (requires rust)
 
