@@ -12,6 +12,7 @@ pub enum ObscuraError {
     ConfirmationMismatch,
     FileExists(String),
     InvalidTimeout,
+    CustomError(String),
 }
 
 impl fmt::Display for ObscuraError {
@@ -31,6 +32,7 @@ impl fmt::Display for ObscuraError {
             }
             ObscuraError::FileExists(path) => write!(f, "File '{}' already exists", path),
             ObscuraError::InvalidTimeout => write!(f, "Invalid timeout value"),
+            ObscuraError::CustomError(msg) => write!(f, "{}", msg),
         }
     }
 }

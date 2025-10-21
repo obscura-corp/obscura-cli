@@ -37,11 +37,24 @@ pub fn handle_list(args: ListArgs) -> ObscuraResult<()> {
     let (_, aliases_data) = load_aliases(&vault_info.path)?;
     let aliases = aliases_data.list_aliases();
 
+    let vault_type = match vault_info.vault_type {
+        VaultType::Global => "global",
+        VaultType::Project => "project",
+    };
+
     if args.json {
-        println!("{}", to_string_pretty(&json!({ "aliases": aliases }))?);
+        println!("{}", to_string_pretty(&json!({ 
+            "vault_type": vault_type,
+            "aliases": aliases 
+        }))?);
     } else {
-        for alias in aliases {
-            println!("{}", alias);
+        println!("Listing {} vault:", vault_type);
+        if aliases.is_empty() {
+            println!("  (no aliases found)");
+        } else {
+            for alias in aliases {
+                println!("  {}", alias);
+            }
         }
     }
 

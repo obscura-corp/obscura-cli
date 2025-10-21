@@ -28,6 +28,9 @@ enum Commands {
     #[command(about = "Add a secret to the vault")]
     Add(add::AddArgs),
 
+    #[command(about = "Import environment variables from a .env file")]
+    Import(import::ImportArgs),
+
     #[command(about = "Retrieve a secret from the vault")]
     Get(get::GetArgs),
 
@@ -76,6 +79,7 @@ fn main() -> Result<()> {
     match cli.command {
         Commands::Init(args) => handle_init(args)?,
         Commands::Add(args) => handle_add(args)?,
+        Commands::Import(args) => handle_import(args)?,
         Commands::Get(args) => handle_get(args)?,
         Commands::List(args) => handle_list(args)?,
         Commands::Ls(args) => handle_list(args)?,

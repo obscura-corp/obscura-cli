@@ -72,6 +72,9 @@ obscura init
 obscura add stripe
 obscura add stripe --from-global  # Copy from global vault
 
+# Import from existing .env file
+obscura import .env.local
+
 # List project secrets
 obscura list
 # or use the shorthand
@@ -113,6 +116,30 @@ Add a secret to the vault.
 obscura add openai                    # Add to project vault (if exists) or global
 obscura add stripe --global           # Add to global vault
 obscura add stripe --from-global      # Copy from global to project vault
+```
+
+### `obscura import <env_file> [OPTIONS]`
+
+Import environment variables from a .env file into the vault.
+
+**Arguments:**
+- `<env_file>` - Name of the .env file to import (e.g., '.env', '.env.local', 'production.env')
+
+**Options:**
+- `--global`, `-g` - Import to the global vault
+- `--project`, `-p` - Import to the project vault
+
+**Behavior:**
+- Defaults to project vault (requires project vault to exist)
+- If no project vault exists, shows error message suggesting to create one or use --global
+- Skips variables that already exist in the vault
+- Supports standard .env format with comments and quoted values
+
+**Examples:**
+```bash
+obscura import .env                    # Import to project vault (default)
+obscura import .env.local --global     # Import to global vault
+obscura import production.env --project # Explicitly import to project vault
 ```
 
 ### `obscura get <alias> [OPTIONS]`
