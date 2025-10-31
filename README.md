@@ -8,6 +8,10 @@
 
 </div>
 
+https://github.com/user-attachments/assets/952b2646-7d6b-4030-8ada-3c9a67ce53f2
+
+
+
 A single-binary, cross-platform local API-key vault CLI secured only by a passphrase. Obscura provides secure storage for API keys and secrets with strong encryption, supporting both global and project-specific vaults.
 
 ## Features
